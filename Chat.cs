@@ -11,7 +11,7 @@ internal class Chat
     {
         var builder = Kernel.CreateBuilder();
         builder.AddOllamaChatCompletion(
-            modelId: "qwen2.5-codeR:32b",
+            modelId: "qwen2.5-coder:32b",
             endpoint: new Uri("http://192.168.50.3:11434"));
         var kernel = builder.Build();
         var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
