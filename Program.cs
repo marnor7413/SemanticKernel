@@ -6,7 +6,7 @@ using Microsoft.SemanticKernel;
 var builder = Kernel.CreateBuilder();
 builder.RegisterServicesExtension();
 builder.RegisterPluginsExtension();
-var options = builder.RegisterModelExtension(Models.Qwen3Coder30b, "http://192.168.50.3:11434/v1");
+var options = builder.RegisterModelExtension(LLM.Qwen3Coder30b, "http://192.168.50.3:11434/v1");
 
 var kernel = builder.Build();
 
