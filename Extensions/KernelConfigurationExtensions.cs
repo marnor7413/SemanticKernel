@@ -1,7 +1,10 @@
-﻿using LLMChatApp.Interfaces;
+﻿using LLMChatApp.Constants;
+using LLMChatApp.Interfaces;
+using LLMChatApp.Options;
 using LLMChatApp.Plugins;
 using LLMChatApp.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
@@ -19,18 +22,30 @@ internal static class KernelConfigurationExtensions
         builder.Plugins.AddFromType<TimePlugin>();
     }
 
+    internal static void AddLogging(this IKernelBuilder builder, LogLevelOptions options)
+    {
+        if (!Enum.TryParse<LogLevel>(options.MinimumLevel, ignoreCase: true, out var level))
+        {
+            throw new InvalidOperationException(Config.LoggingConfigSectionErrorMessage);
+        }
 
-    internal static OpenAIPromptExecutionSettings RegisterModelForOpenAIApiExtension(this IKernelBuilder builder, string model, string endpoint)
+        builder.Services.AddLogging(c => c.AddConsole().SetMinimumLevel(level));
+    }
+
+    internal static OpenAIPromptExecutionSettings RegisterModelForOpenAIApiExtension(
+        this IKernelBuilder builder, 
+        string model, 
+        OllamaOptions options)
     {
         builder.AddOpenAIChatCompletion(
             modelId: model,
-            endpoint: new Uri(endpoint),
-            apiKey: "ollama");
+            endpoint: new Uri(options.Endpoint),
+            apiKey: options.ApiKey);
 
         return new OpenAIPromptExecutionSettings
         {
-            Temperature = 0.3f,
-            MaxTokens = 4096,
+            Temperature = options.Temperature,
+            MaxTokens = options.MaxTokens,
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
         };
     }
