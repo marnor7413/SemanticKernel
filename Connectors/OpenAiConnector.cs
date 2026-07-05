@@ -11,17 +11,17 @@ internal class OpenAiConnector
     private const string ResponseRowPrefix = "AI: ";
     private const string EndApplicationCommand = "quit";
     private const string ExitApplicationMessage = "#### END OF CHAT";
-    public async Task SimpleChat(Kernel kernel, OpenAIPromptExecutionSettings options)
-    {
-        var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
-
-        const string SystemPrompt = @"Key Requirements:
+    private const string SystemPrompt = @"Key Requirements:
             1. Before you answer, tell me what you need to know to answer well, and point out any assumptions you'd otherwise make.
             2. If you make an error, explain it and correct it immediately.
             3. Always double-check your work before giving a response.
-            4. If you do not know or can't find an answer then tell me so.
+            4. Critical: If you do not know or can't find an answer then tell me so.
+            5. Critical: Your primary goal is to provide reliable, accurate, and correct responses at all times.";
 
-            Critical: Your primary goal is to provide reliable, accurate, and correct responses at all times.";
+    public async Task SimpleChat(Kernel kernel, OpenAIPromptExecutionSettings options)
+    {
+        var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
+        
         var history = new ChatHistory();
         history.AddSystemMessage(SystemPrompt);
 
