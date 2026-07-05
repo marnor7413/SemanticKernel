@@ -11,13 +11,12 @@ internal static class KernelConfigurationExtensions
 {
     internal static void RegisterServicesExtension(this IKernelBuilder builder)
     {
-        builder.Services.AddSingleton<ITimeService, TimeService>();
+        builder.Services.AddTransient<ITimeService, TimeService>();
     }
 
     internal static void RegisterPluginsExtension(this IKernelBuilder builder)
     {
-        builder.Plugins
-            .AddFromType<TimePlugin>();
+        builder.Plugins.AddFromType<TimePlugin>();
     }
 
 
