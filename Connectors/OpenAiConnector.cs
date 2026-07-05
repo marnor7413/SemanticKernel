@@ -34,18 +34,32 @@ internal class OpenAiConnector
             {
                 break;
             }
-
             history.AddUserMessage(prompt);
+            Console.WriteLine();
 
-            var LlmResponse = new StringBuilder();
-            Console.Write(BeginningOfReply);
-            await foreach (var messageChunk in chatKlient.GetStreamingChatMessageContentsAsync(history, options, kernel))
+            var responseBuilder = new StringBuilder();
+            Console.Write(ResponseRowPrefix);
+
+            try
             {
-                Console.Write(messageChunk.Content);
-                LlmResponse.Append(messageChunk.Content);
+                await foreach (var messageChunk in chatKlient.GetStreamingChatMessageContentsAsync(history, options, kernel))
+                {
+                    Console.Write(messageChunk.Content);
+                    responseBuilder.Append(messageChunk.Content);
+                }
             }
+            catch(HttpOperationException ex)
+            {
+                Console.WriteLine($"\nCould not reach the model: {ex.Message}");
+                continue;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
 
-            history.AddAssistantMessage(LlmResponse.ToString());
+            history.AddAssistantMessage(responseBuilder.ToString());
             Console.WriteLine();
         }
 
