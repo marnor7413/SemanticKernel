@@ -50,13 +50,14 @@ internal class OpenAiConnector
             catch(HttpOperationException ex)
             {
                 Console.WriteLine($"\nCould not reach the model: {ex.Message}");
+                history.RemoveAt(history.Count - 1);
                 continue;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"\nUnexpected error: {ex.Message}");
                 throw;
             }
-            
 
             history.AddAssistantMessage(responseBuilder.ToString());
             Console.WriteLine();
