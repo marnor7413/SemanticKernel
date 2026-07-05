@@ -1,6 +1,6 @@
-﻿using Microsoft.SemanticKernel;
+﻿using LLMChatApp.Factories;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System.Text;
 
 namespace LLMChatApp.Connectors;
@@ -18,10 +18,8 @@ internal class OpenAiConnector
             4. Critical: If you do not know or can't find an answer then tell me so.
             5. Critical: Your primary goal is to provide reliable, accurate, and correct responses at all times.";
 
-    public async Task SimpleChat(Kernel kernel, OpenAIPromptExecutionSettings options)
+    public async Task SimpleChat(KernelFactory factory)
     {
-        var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
-        
         var history = new ChatHistory();
         history.AddSystemMessage(SystemPrompt);
 
@@ -35,6 +33,9 @@ internal class OpenAiConnector
             }
             history.AddUserMessage(prompt);
             Console.WriteLine();
+
+            var (kernel, options) = factory.GetCurrent();
+            var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
 
             var responseBuilder = new StringBuilder();
             Console.Write(ResponseRowPrefix);
@@ -69,6 +70,7 @@ internal class OpenAiConnector
 
     private static bool ExitApplication(string? prompt)
     {
-        return string.IsNullOrWhiteSpace(prompt) || prompt.Equals(EndApplicationCommand, StringComparison.OrdinalIgnoreCase);
+        return string.IsNullOrWhiteSpace(prompt) 
+            || prompt.Equals(EndApplicationCommand, StringComparison.OrdinalIgnoreCase);
     }
 }

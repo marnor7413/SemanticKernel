@@ -5,6 +5,7 @@ using LLMChatApp.Plugins;
 using LLMChatApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
@@ -20,16 +21,6 @@ internal static class KernelConfigurationExtensions
     internal static void RegisterPluginsExtension(this IKernelBuilder builder)
     {
         builder.Plugins.AddFromType<TimePlugin>();
-    }
-
-    internal static void AddLogging(this IKernelBuilder builder, LogLevelOptions options)
-    {
-        if (!Enum.TryParse<LogLevel>(options.MinimumLevel, ignoreCase: true, out var level))
-        {
-            throw new InvalidOperationException(Config.LoggingConfigSectionErrorMessage);
-        }
-
-        builder.Services.AddLogging(c => c.AddConsole().SetMinimumLevel(level));
     }
 
     internal static OpenAIPromptExecutionSettings RegisterModelForOpenAIApiExtension(

@@ -3,4 +3,5 @@
 internal interface ITimeService
 {
     DateTime GetCurrentDateTime();
+    DateTime GetCurrentDateTimeUtc();
 }
