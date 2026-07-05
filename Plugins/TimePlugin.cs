@@ -8,9 +8,9 @@ internal class TimePlugin
 {
     private readonly ITimeService timeService;
 
-    public TimePlugin(ITimeService timeProvider)
+    public TimePlugin(ITimeService timeService)
     {
-        this.timeService = timeProvider;
+        this.timeService = timeService;
     }
 
     [KernelFunction]
