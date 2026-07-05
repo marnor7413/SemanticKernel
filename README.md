@@ -10,7 +10,7 @@ A first pass at using Semantic Kernel's `IChatCompletionService` against a local
 
 - .NET 10 SDK
 - Ollama running somewhere reachable on your network, with a model already pulled
-- The model name has to match exactly what `ollama list` shows, case included
+- The model name has to match exactly what `ollama list` shows
 
 ## Setup
 
@@ -38,7 +38,7 @@ Tool calling is wired up through a `TimePlugin`, registered via `builder.Plugins
 
 ## A note on model choice
 
-Not every model handles tool calling the same way. `qwen2.5-coder:32b` kept generating the right JSON payload but skipped the `<tool_call>` tags Ollama's chat template expects, so Ollama never picked it up as an actual function call, it just came back as plain text. Switched to `qwen3-coder:30b` instead, which has been more reliable so far. There's a validation check blocking known problem models before the kernel even gets built.
+Not every model handles tool calling the same way. `qwen2.5-coder:32b` kept generating the right JSON payload but skipped the `<tool_call>` tags Ollama's chat template expects, so Ollama never picked it up as an actual function call. It just came back as plain text. Switched to `qwen3-coder:30b` instead, which has been more reliable so far. 
 
 ## Packages
 
