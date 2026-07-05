@@ -7,11 +7,10 @@ namespace LLMChatApp.Connectors;
 
 internal class OpenAiConnector
 {
-    private const string BeginningOfQuestion = "Me: ";
-    private const string BeginningOfReply = "AI: ";
+    private const string QuestionRowPrefix = "Me: ";
+    private const string ResponseRowPrefix = "AI: ";
     private const string EndApplicationCommand = "quit";
     private const string ExitApplicationMessage = "#### END OF CHAT";
-
     public async Task SimpleChat(Kernel kernel, OpenAIPromptExecutionSettings options)
     {
         var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
@@ -28,7 +27,7 @@ internal class OpenAiConnector
 
         while (true)
         {
-            Console.Write(BeginningOfQuestion);
+            Console.Write(QuestionRowPrefix);
             var prompt = Console.ReadLine();
             if (ExitApplication(prompt))
             {
