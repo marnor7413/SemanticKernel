@@ -30,7 +30,7 @@ internal static class KernelConfigurationExtensions
         return new OpenAIPromptExecutionSettings
         {
             Temperature = 0.3f,
-            MaxTokens = 512,
+            MaxTokens = 4096,
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
         };
     }
