@@ -17,7 +17,7 @@ A first pass at using Semantic Kernel's `IChatCompletionService` against a local
 Model and endpoint are passed together when registering the kernel, in `KernelConfigurationExtensions`:
 
 ```csharp
-var options = builder.RegisterModelExtension(LLM.Qwen3Coder30b, new Uri("http://your-ollama-host:11434/v1"));
+var options = builder.RegisterModelForOpenAIApiExtension(LLM.Qwen3Coder30b, new Uri("http://your-ollama-host:11434/v1"));
 ```
 
 Point the URI at your own Ollama instance. Don't forget the `/v1` suffix, that's the OpenAI-compatible path, not Ollama's native API.

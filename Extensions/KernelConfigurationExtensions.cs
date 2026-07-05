@@ -20,7 +20,7 @@ internal static class KernelConfigurationExtensions
     }
 
 
-    internal static OpenAIPromptExecutionSettings RegisterModelExtension(this IKernelBuilder builder, string model, string endpoint)
+    internal static OpenAIPromptExecutionSettings RegisterModelForOpenAIApiExtension(this IKernelBuilder builder, string model, string endpoint)
     {
         builder.AddOpenAIChatCompletion(
             modelId: model,
