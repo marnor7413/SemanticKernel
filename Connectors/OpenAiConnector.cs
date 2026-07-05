@@ -10,8 +10,19 @@ internal class OpenAiConnector
     public async Task SimpleChat(Kernel kernel, OpenAIPromptExecutionSettings options)
     {
         var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
+
+        string systemPrompt = @"Key Requirements:
+            1. Always verify answers using available tools before responding.
+            2. If you make an error, explain it and correct it immediately.
+            3. All calculations must be accurate and logical.
+            4. Do not provide incorrect information.
+            5. Always double-check your work before giving a response.
+            6. If you are unsure, always state this clearly and verify with the tools before proceeding.
+            7. If you do not know the answer, let that be your response, instead of making an assumption or guesswork.
+
+            Critical: Your primary goal is to provide reliable, accurate, and correct responses at all times.";
         var history = new ChatHistory();
-        history.AddSystemMessage("You're a helpful assistant!");
+        history.AddSystemMessage(systemPrompt);
 
         while (true)
         {
