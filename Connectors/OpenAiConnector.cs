@@ -1,31 +1,19 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.Ollama;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System.Text;
 
-namespace LLMChatApp;
+namespace LLMChatApp.Connectors;
 
-internal class Chat
+internal class OpenAiConnector
 {
-    public async Task SimpleChat()
+    public async Task SimpleChat(Kernel kernel, OpenAIPromptExecutionSettings options)
     {
-        var builder = Kernel.CreateBuilder();
-        builder.AddOllamaChatCompletion(
-            modelId: "qwen2.5-coder:32b",
-            endpoint: new Uri("http://192.168.50.3:11434"));
-        var kernel = builder.Build();
         var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
-
-        var options = new OllamaPromptExecutionSettings
-        {
-            Temperature = 0.8f,
-            NumPredict = 512
-        };
-
         var history = new ChatHistory();
-        history.AddSystemMessage("Du är en hjälpsam assistent.");
+        history.AddSystemMessage("You're a helpful assistant!");
 
-        while (true) 
+        while (true)
         {
             Console.Write("Me: ");
             var prompt = Console.ReadLine();
@@ -38,9 +26,9 @@ internal class Chat
 
             var completeResponse = new StringBuilder();
             Console.Write("AI: ");
-            await foreach (var messageChunk in chatKlient.GetStreamingChatMessageContentsAsync(history, options))
+            await foreach (var messageChunk in chatKlient.GetStreamingChatMessageContentsAsync(history, options, kernel))
             {
-                Console.Write(messageChunk);
+                Console.Write(messageChunk.Content);
                 completeResponse.Append(messageChunk.Content);
             }
 

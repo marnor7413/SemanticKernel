@@ -1,52 +1,56 @@
 # LLMChatApp
 
-A small console-based test project for exploring [Semantic Kernel](https://github.com/microsoft/semantic-kernel) against a locally hosted LLM via [Ollama](https://ollama.com).
+Console app for playing around with Semantic Kernel against a self-hosted Ollama instance.
 
-## Purpose
+## What this is
 
-This project is a first exploration of Semantic Kernel's `IChatCompletionService` interface, connected to a self-hosted Ollama instance in a home lab (Proxmox + RTX 5090) instead of a cloud API. The goal is to build on this in later projects, for example a LocalLLMChat Visual Studio extension.
+A first pass at using Semantic Kernel's `IChatCompletionService` against a local model instead of a cloud API. Started out on the experimental Ollama connector, ended up switching to the OpenAI connector pointed at Ollama's OpenAI-compatible endpoint instead, mostly because tool calling behaved more consistently that way.
 
-## Prerequisites
+## Before you run it
 
 - .NET 10 SDK
-- A running Ollama instance, reachable over the network, with at least one model pulled (`ollama pull <model>`)
-- The model referenced in the code must match the exact name reported by `ollama list`, including case
+- Ollama running somewhere reachable on your network, with a model already pulled
+- The model name has to match exactly what `ollama list` shows, case included
 
-## Configuration
+## Setup
 
-Endpoint and model are set in `Chat.cs`:
+Model and endpoint are passed together when registering the kernel, in `KernelConfigurationExtensions`:
 
 ```csharp
-builder.AddOllamaChatCompletion(
-    modelId: "qwen2.5-coder:32b",
-    endpoint: new Uri("http://192.168.50.3:11434"));
+var options = builder.RegisterModelExtension(Models.Qwen3Coder30b, new Uri("http://your-ollama-host:11434/v1"));
 ```
 
-Adjust `endpoint` to your own Ollama instance IP and port (Ollama's default port is `11434`).
+Point the URI at your own Ollama instance. Don't forget the `/v1` suffix, that's the OpenAI-compatible path, not Ollama's native API.
 
-## Running the project
+## Running it
 
 ```bash
 dotnet run
 ```
 
-Type questions in the console. Type `quit` or an empty line to exit.
+Type your question, get a streamed answer back. Type `quit` or hit enter on an empty line to exit.
 
-## What the code does
+## How it works
 
-1. Builds a `Kernel` using Semantic Kernel's Ollama connector (`AddOllamaChatCompletion`), which registers SK's native `IChatCompletionService`.
-2. Sets `OllamaPromptExecutionSettings` with `Temperature` and `NumPredict` to control creativity and maximum response length.
-3. Keeps conversation history in a `ChatHistory`, with a system message set at startup.
-4. Streams the response token by token via `GetStreamingChatMessageContentsAsync`, printing each fragment immediately while simultaneously building the full response in a `StringBuilder` so it can be saved to history afterward.
-5. Loops until the user types `quit` or an empty line.
+Kernel gets built with the OpenAI connector (`AddOpenAIChatCompletion`), pointed at Ollama instead of actual OpenAI. Conversation history sits in a `ChatHistory`, seeded with a system message. Responses stream in through `GetStreamingChatMessageContentsAsync` and get printed as they arrive, while also getting collected into a `StringBuilder` so the full reply can go back into history once it's done.
 
-## Packages used
+Tool calling is wired up through a `TimePlugin`, registered via `builder.Plugins.AddFromType<TimePlugin>()`, with `ITimeService` injected through the constructor and registered as a singleton. `FunctionChoiceBehavior.Auto()` is set on the execution settings so the model can decide on its own when to call it.
 
-- `Microsoft.SemanticKernel.Connectors.Ollama` (experimental, requires `<NoWarn>SKEXP0070</NoWarn>` in `.csproj`)
+## A note on model choice
 
-## Known limitations / things to keep in mind
+Not every model handles tool calling the same way. `qwen2.5-coder:32b` kept generating the right JSON payload but skipped the `<tool_call>` tags Ollama's chat template expects, so Ollama never picked it up as an actual function call, it just came back as plain text. Switched to `qwen3-coder:30b` instead, which has been more reliable so far. There's a validation check blocking known problem models before the kernel even gets built.
 
-- The Ollama connector is still marked experimental by Microsoft (`SKEXP0070`) and the API may change in future versions.
-- No error handling for interrupted network calls or if the Ollama instance is unreachable.
-- The model name must match exactly, including case, against what the Ollama instance has actually pulled.
-- No explicit `keep_alive` set on the call, so Ollama's default of 5 minutes applies for how long the model stays loaded in VRAM between calls.
+## Packages
+
+- `Microsoft.SemanticKernel.Connectors.OpenAI`
+
+## Not handled yet
+
+- No error handling if Ollama is unreachable or the model doesn't exist
+- No `keep_alive` set explicitly, so it falls back to Ollama's 5 minute default before the model unloads from VRAM
+
+## Maybe later
+
+- Pull config into `appsettings.json` instead of passing things around in code
+- Actual error handling
+- Check available models against Ollama at startup instead of trusting a hardcoded list

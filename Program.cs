@@ -1,4 +1,13 @@
-﻿using LLMChatApp;
+﻿using LLMChatApp.Connectors;
+using LLMChatApp.Constants;
+using LLMChatApp.Extensions;
+using Microsoft.SemanticKernel;
 
-Console.WriteLine("Hello, World!");
-await new Chat().SimpleChat();
+var builder = Kernel.CreateBuilder();
+builder.RegisterServicesExtension();
+builder.RegisterPluginsExtension();
+var options = builder.RegisterModelExtension(Models.Qwen3Coder30b, "http://192.168.50.3:11434/v1");
+
+var kernel = builder.Build();
+
+await new OpenAiConnector().SimpleChat(kernel, options);
