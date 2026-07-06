@@ -10,6 +10,7 @@ internal class OpenAiConnector
     private const string QuestionRowPrefix = "Me: ";
     private const string ResponseRowPrefix = "AI: ";
     private const string EndApplicationCommand = "quit";
+    private const string StartApplicationMessage = "#### START OF CHAT";
     private const string ExitApplicationMessage = "#### END OF CHAT";
     private const string SystemPrompt = @"Key Requirements:
             1. Before you answer, tell me what you need to know to answer well, and point out any assumptions you'd otherwise make.
@@ -20,6 +21,8 @@ internal class OpenAiConnector
 
     public async Task SimpleChat(KernelFactory factory)
     {
+        Console.WriteLine(StartApplicationMessage);
+        Console.WriteLine();
         var history = new ChatHistory();
         history.AddSystemMessage(SystemPrompt);
 

@@ -18,6 +18,7 @@ internal static class KernelConfigurationExtensions
     internal static void RegisterPluginsExtension(this IKernelBuilder builder)
     {
         builder.Plugins.AddFromType<TimePlugin>();
+        builder.Plugins.AddFromType<CalculatorPlugin>();
     }
 
     internal static OpenAIPromptExecutionSettings RegisterModelForOpenAIApiExtension(this IKernelBuilder builder, OllamaOptions options)
