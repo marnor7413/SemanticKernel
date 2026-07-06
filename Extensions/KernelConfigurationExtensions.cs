@@ -1,11 +1,8 @@
-﻿using LLMChatApp.Constants;
-using LLMChatApp.Interfaces;
+﻿using LLMChatApp.Interfaces;
 using LLMChatApp.Options;
 using LLMChatApp.Plugins;
 using LLMChatApp.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
@@ -23,13 +20,10 @@ internal static class KernelConfigurationExtensions
         builder.Plugins.AddFromType<TimePlugin>();
     }
 
-    internal static OpenAIPromptExecutionSettings RegisterModelForOpenAIApiExtension(
-        this IKernelBuilder builder, 
-        string model, 
-        OllamaOptions options)
+    internal static OpenAIPromptExecutionSettings RegisterModelForOpenAIApiExtension(this IKernelBuilder builder, OllamaOptions options)
     {
         builder.AddOpenAIChatCompletion(
-            modelId: model,
+            modelId: options.Model,
             endpoint: new Uri(options.Endpoint),
             apiKey: options.ApiKey);
 

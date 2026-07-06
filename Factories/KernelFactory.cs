@@ -1,5 +1,4 @@
-﻿using LLMChatApp.Constants;
-using LLMChatApp.Extensions;
+﻿using LLMChatApp.Extensions;
 using LLMChatApp.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -41,13 +40,11 @@ internal class KernelFactory : IDisposable
         {
             if (kernel is null)
             {
-                var options = optionsMonitor.CurrentValue;
-
                 var builder = Kernel.CreateBuilder();
                 builder.Services.AddSingleton(loggerFactory);
                 builder.RegisterServicesExtension();
                 builder.RegisterPluginsExtension();
-                openAIOptions = builder.RegisterModelForOpenAIApiExtension(LLM.Qwen3Coder30b, options);
+                openAIOptions = builder.RegisterModelForOpenAIApiExtension(optionsMonitor.CurrentValue);
                 kernel = builder.Build();
             }
 
