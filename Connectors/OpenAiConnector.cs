@@ -1,4 +1,5 @@
-﻿using LLMChatApp.Factories;
+﻿using LLMChatApp.Constants;
+using LLMChatApp.Factories;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using System.Text;
@@ -51,7 +52,7 @@ internal class OpenAiConnector
                     responseBuilder.Append(messageChunk.Content);
                 }
             }
-            catch(HttpOperationException ex)
+            catch (HttpOperationException ex)
             {
                 Console.WriteLine($"\nCould not reach the model: {ex.Message}");
                 history.RemoveAt(history.Count - 1);
@@ -64,11 +65,22 @@ internal class OpenAiConnector
             }
 
             history.AddAssistantMessage(responseBuilder.ToString());
+            history = await SummarizeAndReduceMessageHistory(chatKlient, history);
             Console.WriteLine();
         }
 
         Console.WriteLine();
         Console.WriteLine(ExitApplicationMessage);
+    }
+
+    private static async Task<ChatHistory> SummarizeAndReduceMessageHistory(IChatCompletionService chatKlient, ChatHistory history)
+    {
+        var reducer = new ChatHistorySummarizationReducer(
+                        service: chatKlient,
+                        targetCount: MessageSummarySettings.MessagesToKeep,
+                        thresholdCount: MessageSummarySettings.AmountOfOldestUserMessagesToSummarize);
+        
+        return new ChatHistory(await reducer.ReduceAsync(history) ?? history);
     }
 
     private static bool ExitApplication(string? prompt)
