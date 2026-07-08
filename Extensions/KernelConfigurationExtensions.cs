@@ -10,29 +10,32 @@ namespace LLMChatApp.Extensions;
 
 internal static class KernelConfigurationExtensions
 {
-    internal static void RegisterServicesExtension(this IKernelBuilder builder)
+    internal static void RegisterServices(this IKernelBuilder builder)
     {
         builder.Services.AddTransient<ITimeService, TimeService>();
     }
 
-    internal static void RegisterPluginsExtension(this IKernelBuilder builder)
+    internal static void RegisterPlugins(this IKernelBuilder builder)
     {
         builder.Plugins.AddFromType<TimePlugin>();
         builder.Plugins.AddFromType<CalculatorPlugin>();
     }
 
-    internal static OpenAIPromptExecutionSettings RegisterModelForOpenAIApiExtension(this IKernelBuilder builder, OllamaOptions options)
+    internal static OpenAIPromptExecutionSettings CreatePromptSettings(this IKernelBuilder builder, OllamaOptions options)
     {
-        builder.AddOpenAIChatCompletion(
-            modelId: options.Model,
-            endpoint: new Uri(options.Endpoint),
-            apiKey: options.ApiKey);
-
         return new OpenAIPromptExecutionSettings
         {
             Temperature = options.Temperature,
             MaxTokens = options.MaxTokens,
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
         };
+    }
+
+    internal static void RegisterModel(this IKernelBuilder builder, OllamaOptions options)
+    {
+        builder.AddOpenAIChatCompletion(
+            modelId: options.Model,
+            endpoint: new Uri(options.Endpoint),
+            apiKey: options.ApiKey);
     }
 }

@@ -42,9 +42,10 @@ internal class KernelFactory : IDisposable
             {
                 var builder = Kernel.CreateBuilder();
                 builder.Services.AddSingleton(loggerFactory);
-                builder.RegisterServicesExtension();
-                builder.RegisterPluginsExtension();
-                openAIOptions = builder.RegisterModelForOpenAIApiExtension(optionsMonitor.CurrentValue);
+                builder.RegisterServices();
+                builder.RegisterPlugins();
+                builder.RegisterModel(optionsMonitor.CurrentValue);
+                openAIOptions = builder.CreatePromptSettings(optionsMonitor.CurrentValue);
                 kernel = builder.Build();
             }
 
