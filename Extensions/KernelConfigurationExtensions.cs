@@ -1,4 +1,5 @@
-﻿using LLMChatApp.Interfaces;
+﻿using LLMChatApp.Filters;
+using LLMChatApp.Interfaces;
 using LLMChatApp.Options;
 using LLMChatApp.Plugins;
 using LLMChatApp.Services;
@@ -13,6 +14,7 @@ internal static class KernelConfigurationExtensions
     internal static void RegisterServices(this IKernelBuilder builder)
     {
         builder.Services.AddTransient<ITimeService, TimeService>();
+        builder.Services.AddSingleton<IFunctionInvocationFilter, ChangeTimeOnUsersComputerApprovalFilter>();
     }
 
     internal static void RegisterPlugins(this IKernelBuilder builder)
