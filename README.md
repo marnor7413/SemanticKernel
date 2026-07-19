@@ -55,7 +55,7 @@ Four native functions plus two REST APIs, all handed to the model with `Function
 Native:
 
 - `CalculatorPlugin`: add, subtract, multiply and divide
-- `TimePlugin`: current time, day of the week and a `ChangeTimeOnUsersComputer` function that is deliberately gated (see below)
+- `TimePlugin`: current time, day of the week and a `ChangeTimeOnUsersComputer` function that is deliberately gated (HIL, see below)
 
 From OpenAPI specs:
 
@@ -63,7 +63,7 @@ From OpenAPI specs:
 - geocoding against Open-Meteo
 
 ### The approval gate
-`ChangeTimeOnUsersComputerApprovalFilter` is an `IFunctionInvocationFilter`. It watches for one specific call, the time change on `TimePlugin`, and stops to ask for a y/n on the console before letting it through. Everything else passes straight past it. The function doesn't actually touch the system clock, it just returns a string, but it stands in for the kind of call you would never want a model firing off on its own.
+`ChangeTimeOnUsersComputerApprovalFilter` is an `IFunctionInvocationFilter` that introduces a human-in-the-loop (HIL) step on one specific call. It watches for the time change on `TimePlugin` and stops to ask for a y/n on the console before letting it through. Everything else passes straight past it. The function doesn't actually touch the system clock, it just returns a string, but it stands in for the kind of call you would never want a model firing off on its own.
 
 ### The two Open-Meteo APIs
 Both specs live in `ApiSpecifications/` and are read off disk at startup instead of fetched over the wire. There is a reason for that. Open-Meteo's docs site at `open-meteo.com` answers a 404 to anything that doesn't look like a browser, so a plain `HttpClient` can't pull the spec down. The data hosts, `api.open-meteo.com` and `geocoding-api.open-meteo.com`, don't care and respond fine. So the specs are committed to the repo and the runtime calls go straight to those hosts through a named `HttpClient` from `IHttpClientFactory`.
