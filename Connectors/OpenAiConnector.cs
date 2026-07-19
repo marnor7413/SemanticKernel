@@ -38,7 +38,7 @@ internal class OpenAiConnector
             history.AddUserMessage(prompt);
             Console.WriteLine();
 
-            var (kernel, options) = factory.GetCurrent();
+            var (kernel, options) = await factory.GetCurrentAsync();
             var chatKlient = kernel.GetRequiredService<IChatCompletionService>();
 
             var responseBuilder = new StringBuilder();
