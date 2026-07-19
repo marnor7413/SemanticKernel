@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  title: Open-Meteo Geocoding API
+  description: Search locations by name and get their latitude and longitude coordinates.
+  version: '1.0'
+paths:
+  /v1/search:
+    servers:
+      - url: https://geocoding-api.open-meteo.com
+    get:
+      operationId: searchLocation
+      summary: Convert a place name into coordinates
+      description: >-
+        Looks up the latitude and longitude for a city, town or other named
+        place. Call this first whenever the user refers to a location by name,
+        then use the returned latitude and longitude with the getForecast
+        function.
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: The place name to search for, for example a city or town.
+          schema:
+            type: string
+        - name: count
+          in: query
+          description: Number of results to return.
+          schema:
+            type: string
+        - name: language
+          in: query
+          schema:
+            type: string
+            default: en
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        latitude:
+                          type: number
+                        longitude:
+                          type: number
+                        country:
+                          type: string
+                        admin1:
+                          type: string
