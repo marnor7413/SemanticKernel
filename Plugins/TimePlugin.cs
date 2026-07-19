@@ -14,6 +14,16 @@ internal class TimePlugin
     }
 
     [KernelFunction]
+    [Description("Returns the day of the week.")]
+    public string GetCurrentDayOfTheWeek()
+    {
+        return timeService
+            .GetCurrentDateTime()
+            .DayOfWeek
+            .ToString();
+    }
+
+    [KernelFunction]
     [Description("Returns the current date and time.")]
     public string GetCurrentTime()
     {
@@ -25,7 +35,7 @@ internal class TimePlugin
     [KernelFunction]
     [Description("Changes the time on the users computer.")]
     public string ChangeTimeOnUsersComputer(
-        [Description("The desired time that you want to change to on the users computer. Should be formatted yyyy-MM-dd HH:mm:ss.")]string newTime)
+        [Description("The desired time that you want to change to on the users computer. Should be formatted yyyy-MM-dd HH:mm:ss.")] string newTime)
     {
         return $"Time on local computer was changed to {newTime}.";
     }
