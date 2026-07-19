@@ -17,6 +17,11 @@ services.RegisterLogging();
 services.Configure<OllamaOptions>(configuration.GetSection(Config.OllamaConfigSection));
 services.Configure<LogLevelOptions>(configuration.GetSection(Config.LoggingConfigSection));
 services.AddSingleton<KernelFactory>();
+services.AddHttpClient("open-meteo", client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("LLMChatApp/1.0");
+});
+
 
 var serviceProvider = services.BuildServiceProvider();
 var kernelFactory = serviceProvider.GetRequiredService<KernelFactory>();
